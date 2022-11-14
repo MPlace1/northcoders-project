@@ -13,9 +13,9 @@ exports.fetchCategories = () => {
 exports.fetchReviews = () => {
     return db
         .query(
-            `select * from reviews order by created_at desc`
+            `select reviews.*, comments.review_id as comment_count from reviews join comments on reviews.review_id = comments.review_id order by reviews.created_at desc`
         )
-        .then((categories) => {
-            return categories.rows
+        .then((reviews) => {
+            return reviews.rows
         })
 }

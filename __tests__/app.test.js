@@ -28,7 +28,7 @@ describe('/api/categories', () => {
                 .expect(200)
                 .then(({ body }) => {
                     expect(body.categories.length).toBeGreaterThan(0)
-                    for (let i = 0; i < body.categories; i++) {
+                    for (let i = 0; i < body.categories.length; i++) {
                         expect(body.categories[i]).toMatchObject({
                             slug: expect.any(String),
                             description: expect.any(String)
@@ -47,7 +47,7 @@ describe('/api/reviews', () => {
                 .expect(200)
                 .then(({ body }) => {
                     expect(body.reviews.length).toBeGreaterThan(0)
-                    for (let i = 0; i < body.reviews; i++) {
+                    for (let i = 0; i < body.reviews.length; i++) {
                         expect(body.reviews[i]).toMatchObject({
                             owner: expect.any(String),
                             title: expect.any(String),
