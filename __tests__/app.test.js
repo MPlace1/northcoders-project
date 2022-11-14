@@ -46,7 +46,6 @@ describe('/api/reviews', () => {
                 .get("/api/reviews")
                 .expect(200)
                 .then(({ body }) => {
-                    console.log(body)
                     expect(body.reviews.length).toBeGreaterThan(0)
                     for (let i = 0; i < body.reviews; i++) {
                         expect(body.reviews[i]).toMatchObject({
