@@ -22,7 +22,7 @@ describe('should return a 404 error if an incorrect URL is entered', () => {
 
 describe('/api/categories', () => {
     describe('GET', () => {
-        test('should return a array of category objects', () => {
+        test('should return an array of category objects', () => {
             return request(app)
                 .get("/api/categories")
                 .expect(200)
@@ -41,7 +41,7 @@ describe('/api/categories', () => {
 
 describe('/api/reviews', () => {
     describe('GET', () => {
-        test('should return a array of review objects', () => {
+        test('should return an array of review objects', () => {
             return request(app)
                 .get("/api/reviews")
                 .expect(200)
@@ -57,10 +57,20 @@ describe('/api/reviews', () => {
                             created_at: expect.any(String),
                             votes: expect.any(Number),
                             designer: expect.any(String),
-                            comment_count: expect.any(Number) 
+                            comment_count: expect.any(Number)
                         })
+
                     }
                 })
         });
+
+        test('should return an array sorted by created date', () => {
+            return request(app)
+                .get("/api/reviews")
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.reviews).toBeSortedBy('created_at', { descending: true, coerce: true, })
+                })
+        })
     });
 });

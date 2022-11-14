@@ -13,7 +13,7 @@ exports.fetchCategories = () => {
 exports.fetchReviews = () => {
     return db
         .query(
-            `select * from reviews`
+            `select * from reviews order by created_at desc`
         )
         .then((categories) => {
             return categories.rows
