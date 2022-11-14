@@ -27,12 +27,38 @@ describe('/api/categories', () => {
                 .get("/api/categories")
                 .expect(200)
                 .then(({ body }) => {
-                    console.log(body)
                     expect(body.categories.length).toBeGreaterThan(0)
                     for (let i = 0; i < body.categories; i++) {
                         expect(body.categories[i]).toMatchObject({
                             slug: expect.any(String),
                             description: expect.any(String)
+                        })
+                    }
+                })
+        });
+    });
+});
+
+describe('/api/reviews', () => {
+    describe('GET', () => {
+        test('should return a array of review objects', () => {
+            return request(app)
+                .get("/api/reviews")
+                .expect(200)
+                .then(({ body }) => {
+                    console.log(body)
+                    expect(body.reviews.length).toBeGreaterThan(0)
+                    for (let i = 0; i < body.reviews; i++) {
+                        expect(body.reviews[i]).toMatchObject({
+                            owner: expect.any(String),
+                            title: expect.any(String),
+                            review_id: expect.any(Number),
+                            category: expect.any(String),
+                            review_img_url: expect.any(String),
+                            created_at: expect.any(String),
+                            votes: expect.any(Number),
+                            designer: expect.any(String),
+                            comment_count: expect.any(Number) 
                         })
                     }
                 })
