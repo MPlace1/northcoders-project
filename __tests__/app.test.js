@@ -57,7 +57,7 @@ describe('/api/reviews', () => {
                             created_at: expect.any(String),
                             votes: expect.any(Number),
                             designer: expect.any(String),
-                            comment_count: expect.any(Number)
+                            comment_count: expect.any(String)
                         })
 
                     }
