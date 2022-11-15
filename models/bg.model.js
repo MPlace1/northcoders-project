@@ -38,9 +38,8 @@ exports.fetchReviewById = (review_id) => {
 exports.fetchReviewComments = (review_id) => {
     return db
         .query(
-            `SELECT comments.* FROM comments full outer join reviews on comments.review_id = reviews.review_id WHERE reviews.review_id = $1;`,
+            `SELECT comments.* FROM comments full outer join reviews on comments.review_id = reviews.review_id WHERE reviews.review_id = $1 ORDER BY comments.created_at desc;`,
             [review_id]
-            //`select * from reviews;`
         )
         .then((review) => {
             if (review.rows.length === 0) {
