@@ -2,7 +2,8 @@ const {
     fetchCategories,
     fetchReviews,
     fetchReviewById,
-    fetchReviewComments
+    fetchReviewComments,
+    addReviewComment
 } = require("../models/bg.model");
 
 exports.getCategories = (req, res, next) => {
@@ -41,6 +42,18 @@ exports.getReviewComments = (req, res, next) => {
     fetchReviewComments(review_id)
         .then((review) => {
             res.status(200).send({ review });
+        })
+        .catch((err) => {
+            next(err);
+        });
+};
+
+exports.postReviewComment = (req, res, next) => {
+    const { review_id } = req.params;
+    const body = req.body;
+    addReviewComment( review_id, body)
+        .then((review) => {
+            res.status(201).send({ Comment: review[0] });
         })
         .catch((err) => {
             next(err);

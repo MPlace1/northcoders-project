@@ -55,3 +55,34 @@ exports.fetchReviewComments = (review_id) => {
             }
         });
 };
+
+exports.addReviewComment = (review_id, reqBody) => {
+    const { username, body } = reqBody;
+    if (Object.keys(reqBody).length === 2) {
+        const reqKeys = [
+            "username",
+            "body",
+        ];
+        console.log(reqBody)
+        bool = Object.keys(reqBody).every((key) => reqKeys.includes(key));
+        console.log(bool)
+        if (!bool) {
+            return Promise.reject({ status: 400, msg: "Invalid comment" });
+        }
+        console.log(2)
+        return db
+            .query(
+            `INSERT INTO comments
+            (author, body, review_id)
+            VALUES ($1, $2, $3)
+            RETURNING *;`,
+                [username, body, review_id]
+            )
+            .then((comment) => {
+                console.log(comment.rows)
+                return comment.rows;
+            });
+    } else {
+        return Promise.reject({ status: 400, msg: "Invalid comment" });
+    }
+};

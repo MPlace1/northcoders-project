@@ -168,4 +168,71 @@ describe('/api/reviews/:review_id/comments', () => {
                 });
         });
     });
+    describe("POST", () => {
+        test("posts the new comment with a status code of 201", () => {
+            const newComment = {
+                username: "mallionaire",
+                body : 'This is something',
+            };
+            return request(app)
+                .post("/api/reviews/1/comments")
+                .send(newComment)
+                .expect(201)
+                .then(({ body }) => {
+                    console.log(body)
+                    expect(body.Comment).toEqual({
+                        comment_id: 7,
+                        body: 'This is something',
+                        review_id: 1,
+                        author: 'mallionaire',
+                        votes: 0,
+                        created_at: expect.any(String)
+                      });
+                });
+        });
+
+        test("should give a 400 status code if a post request is made with a missing key", () => {
+            const newComment = {
+                author: "mallionaire"
+            };
+
+            return request(app)
+                .post("/api/reviews/1/comments")
+                .send(newComment)
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toEqual("Invalid comment");
+                });
+        });
+
+        test("should return a 400 status code if a post request is made with an incorrect key name", () => {
+            const newComment = {
+                author: "mallionaire",
+                comment : 'This is something',
+            };
+
+            return request(app)
+                .post("/api/reviews/1/comments")
+                .send(newComment)
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toEqual("Invalid comment");
+                });
+        });
+
+        test("should return a 400 status code if a post request is made with an incorrect value type", () => {
+            const newComment = {
+                author: 1,
+                body : 'This is something',
+            };
+
+            return request(app)
+                .post("/api/reviews/1/comments")
+                .send(newComment)
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toEqual("Invalid comment");
+                });
+        });
+    });
 });
