@@ -22,14 +22,13 @@ describe('should return a 404 error if an incorrect URL is entered', () => {
 
 describe('/api/categories', () => {
     describe('GET', () => {
-        test('should return a array of category objects', () => {
+        test('should return an array of category objects', () => {
             return request(app)
                 .get("/api/categories")
                 .expect(200)
                 .then(({ body }) => {
-                    console.log(body)
                     expect(body.categories.length).toBeGreaterThan(0)
-                    for (let i = 0; i < body.categories; i++) {
+                    for (let i = 0; i < body.categories.length; i++) {
                         expect(body.categories[i]).toMatchObject({
                             slug: expect.any(String),
                             description: expect.any(String)
@@ -37,5 +36,41 @@ describe('/api/categories', () => {
                     }
                 })
         });
+    });
+});
+
+describe('/api/reviews', () => {
+    describe('GET', () => {
+        test('should return an array of review objects', () => {
+            return request(app)
+                .get("/api/reviews")
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.reviews.length).toBeGreaterThan(0)
+                    for (let i = 0; i < body.reviews.length; i++) {
+                        expect(body.reviews[i]).toMatchObject({
+                            owner: expect.any(String),
+                            title: expect.any(String),
+                            review_id: expect.any(Number),
+                            category: expect.any(String),
+                            review_img_url: expect.any(String),
+                            created_at: expect.any(String),
+                            votes: expect.any(Number),
+                            designer: expect.any(String),
+                            comment_count: expect.any(String)
+                        })
+
+                    }
+                })
+        });
+
+        test('should return an array sorted by created date', () => {
+            return request(app)
+                .get("/api/reviews")
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.reviews).toBeSortedBy('created_at', { descending: true, coerce: true, })
+                })
+        })
     });
 });
