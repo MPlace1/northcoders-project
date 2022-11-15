@@ -34,3 +34,24 @@ exports.fetchReviewById = (review_id) => {
             }
         });
 };
+
+exports.fetchReviewComments = (review_id) => {
+    return db
+        .query(
+            `SELECT comments.* FROM comments full outer join reviews on comments.review_id = reviews.review_id WHERE reviews.review_id = $1 ORDER BY comments.created_at desc;`,
+            [review_id]
+        )
+        .then((review) => {
+            if (review.rows.length === 0) {
+                return Promise.reject({ status: 404, msg: "review does not exist" });
+            } else {
+                for (let i = 0; i < review.rows.length; i++) {
+                    if (review.rows[i].comment_id === undefined || review.rows[i].comment_id === null) {
+                        return review.rows = [];
+                    } else {
+                        return review.rows;
+                    }
+                }
+            }
+        });
+};

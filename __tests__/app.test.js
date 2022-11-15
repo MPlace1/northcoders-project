@@ -116,3 +116,56 @@ describe('/api/reviews/:review_id', () => {
         });
     });
 });
+
+describe('/api/reviews/:review_id/comments', () => {
+    describe("GET", () => {
+        test("should return the review from the table if the Id is valid", () => {
+            return request(app)
+                .get("/api/reviews/2/comments")
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.review.length).toBeGreaterThan(0)
+                    expect(body.review[0]).toMatchObject({
+                        body: 'Now this is a story all about how, board games turned my life upside down',
+                        votes: 13,
+                        author: 'mallionaire',
+                        review_id: 2,
+                        created_at: '2021-01-18T10:24:05.410Z'
+                    })
+                })
+        });
+        test('should return an array sorted by created date', () => {
+            return request(app)
+                .get("/api/reviews/2/comments")
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.review).toBeSortedBy('created_at', { descending: true, coerce: true, })
+                })
+        })
+        test("should return an empty array if there are no comments for the given review", () => {
+            return request(app)
+                .get("/api/reviews/1/comments")
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.review.length).toEqual(0)
+                    expect(body.review).toEqual([])
+                })
+        });
+        test("should return a 404 status if the Id is invalid", () => {
+            return request(app)
+                .get("/api/reviews/10000/comments")
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toEqual("review does not exist");
+                });
+        });
+        test("should return a 404 status if the Id is invalid", () => {
+            return request(app)
+                .get("/api/reviews/a/comments")
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toEqual("Bad request");
+                });
+        });
+    });
+});
