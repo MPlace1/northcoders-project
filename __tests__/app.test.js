@@ -179,7 +179,6 @@ describe('/api/reviews/:review_id/comments', () => {
                 .send(newComment)
                 .expect(201)
                 .then(({ body }) => {
-                    console.log(body)
                     expect(body.Comment).toEqual({
                         comment_id: 7,
                         body: 'This is something',
@@ -188,6 +187,33 @@ describe('/api/reviews/:review_id/comments', () => {
                         votes: 0,
                         created_at: expect.any(String)
                       });
+                });
+        });
+        test("should return a 404 error if the request is made to a review which doesn't exist", () => {
+            const newComment = {
+                username: "mallionaire",
+                body : 'This is something',
+            };
+            return request(app)
+                .post("/api/reviews/100000/comments")
+                .send(newComment)
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Invalid review ID');
+                });
+        });
+
+        test("should return a 404 if the user doesn't exist", () => {
+            const newComment = {
+                username: "banana",
+                body : 'This is something',
+            };
+            return request(app)
+                .post("/api/reviews/1/comments")
+                .send(newComment)
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe("This user doesn't exist");
                 });
         });
 

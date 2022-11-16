@@ -63,13 +63,10 @@ exports.addReviewComment = (review_id, reqBody) => {
             "username",
             "body",
         ];
-        console.log(reqBody)
         bool = Object.keys(reqBody).every((key) => reqKeys.includes(key));
-        console.log(bool)
         if (!bool) {
             return Promise.reject({ status: 400, msg: "Invalid comment" });
         }
-        console.log(2)
         return db
             .query(
             `INSERT INTO comments
@@ -78,8 +75,7 @@ exports.addReviewComment = (review_id, reqBody) => {
             RETURNING *;`,
                 [username, body, review_id]
             )
-            .then((comment) => {
-                console.log(comment.rows)
+            .then((comment) => { 
                 return comment.rows;
             });
     } else {

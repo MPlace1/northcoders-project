@@ -56,6 +56,18 @@ exports.postReviewComment = (req, res, next) => {
             res.status(201).send({ Comment: review[0] });
         })
         .catch((err) => {
+            if (err.code === '23503' && err.constraint === 'comments_author_fkey') {
+                return next ({
+                    status: 404,
+                    msg: "This user doesn't exist"
+                })
+            }
+            if (err.code === '23503' && err.constraint === 'comments_review_id_fkey') {
+                return next ({
+                    status: 404,
+                    msg: "Invalid review ID"
+                })
+            }
             next(err);
         });
 };
