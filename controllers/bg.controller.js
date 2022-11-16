@@ -2,7 +2,8 @@ const {
     fetchCategories,
     fetchReviews,
     fetchReviewById,
-    fetchReviewComments
+    fetchReviewComments,
+    addReviewComment
 } = require("../models/bg.model");
 
 exports.getCategories = (req, res, next) => {
@@ -43,6 +44,30 @@ exports.getReviewComments = (req, res, next) => {
             res.status(200).send({ review });
         })
         .catch((err) => {
+            next(err);
+        });
+};
+
+exports.postReviewComment = (req, res, next) => {
+    const { review_id } = req.params;
+    const body = req.body;
+    addReviewComment( review_id, body)
+        .then((review) => {
+            res.status(201).send({ Comment: review[0] });
+        })
+        .catch((err) => {
+            if (err.code === '23503' && err.constraint === 'comments_author_fkey') {
+                return next ({
+                    status: 404,
+                    msg: "This user doesn't exist"
+                })
+            }
+            if (err.code === '23503' && err.constraint === 'comments_review_id_fkey') {
+                return next ({
+                    status: 404,
+                    msg: "Invalid review ID"
+                })
+            }
             next(err);
         });
 };
