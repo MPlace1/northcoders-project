@@ -24,7 +24,7 @@ exports.getReviews = (req, res, next) => {
         .then((reviews) => {
             if (reviews.length === 0) {
                 return Promise.reject({
-                    status: 400, msg: "Invalid category"
+                    status: 404, msg: "Category not found"
                 })
             }
             res.status(200).send({ reviews })

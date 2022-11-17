@@ -172,9 +172,9 @@ describe("GET /api/reviews/", () => {
     test("should return a 400 status if a category that doesn't exist is entered", () => {
         return request(app)
             .get("/api/reviews?category=nonExistentCategory")
-            .expect(400)
+            .expect(404)
             .then(({ body }) => {
-                expect(body.msg).toEqual("Invalid category");
+                expect(body.msg).toEqual("Category not found");
             });
     });
 });
