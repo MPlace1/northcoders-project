@@ -82,8 +82,7 @@ describe('/api/reviews/:review_id', () => {
                 .get("/api/reviews/1")
                 .expect(200)
                 .then(({ body }) => {
-                    expect(body.review.length).toBeGreaterThan(0)
-                    expect(body.review[0]).toMatchObject({
+                    expect(body.review).toMatchObject({
                         review_id: 1,
                         title: 'Agricola',
                         designer: 'Uwe Rosenberg',
@@ -93,7 +92,8 @@ describe('/api/reviews/:review_id', () => {
                         review_body: 'Farmyard fun!',
                         category: 'euro game',
                         created_at: '2021-01-18T10:00:20.514Z',
-                        votes: 1
+                        votes: 1,
+                        comment_count: 0
                     })
 
                 })
@@ -106,7 +106,7 @@ describe('/api/reviews/:review_id', () => {
                     expect(body.msg).toBe("review does not exist");
                 });
         });
-        test("should return a 404 status if the Id is invalid (not a number)", () => {
+        test("should return a 400 status if the Id is invalid (not a number)", () => {
             return request(app)
                 .get("/api/reviews/a")
                 .expect(400)
@@ -114,6 +114,26 @@ describe('/api/reviews/:review_id', () => {
                     expect(body.msg).toBe("Bad request");
                 });
         });
+        test("should now show comment count having a value higher than 0 if the review has comments", () => {
+            return request(app)
+                .get("/api/reviews/2")
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.review).toMatchObject( {
+                        review_id: 2,
+                        title: 'Jenga',
+                        designer: 'Leslie Scott',
+                        owner: 'philippaclaire9',
+                        review_img_url:
+                          'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+                        review_body: 'Fiddly fun for all the family',
+                        category: 'dexterity',
+                        created_at: '2021-01-18T10:01:41.251Z',
+                        votes: 5,
+                        comment_count: 3
+                      })
+                })
+        })
     });
     describe('PATCH', () => {
         test('should update the votes of a review (adding)', () => {
@@ -152,7 +172,7 @@ describe('/api/reviews/:review_id', () => {
                    "votes": -49,})
             })
         });
-        test("should keep the vote count the saaame if 0 is entered", () => {
+        test("should keep the vote count the same if 0 is entered", () => {
             const updateVotes = {inc_votes: 0}
             return request(app)
             .patch("/api/reviews/1")
