@@ -109,3 +109,13 @@ exports.updateReviewById = (review_id, inc_votes) => {
         }
     })
 }
+
+exports.fetchUsers = () => {
+    return db
+        .query(
+            `select * from users`
+        )
+        .then((users) => {
+            return users.rows
+        })
+}
