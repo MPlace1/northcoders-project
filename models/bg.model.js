@@ -69,16 +69,43 @@ exports.addReviewComment = (review_id, reqBody) => {
         }
         return db
             .query(
-            `INSERT INTO comments
+                `INSERT INTO comments
             (author, body, review_id)
             VALUES ($1, $2, $3)
             RETURNING *;`,
                 [username, body, review_id]
             )
-            .then((comment) => { 
+            .then((comment) => {
                 return comment.rows;
             });
     } else {
         return Promise.reject({ status: 400, msg: "Invalid comment" });
     }
 };
+
+exports.updateReviewById = (review_id, inc_votes) => {
+    const votes = inc_votes
+
+    if (!votes && votes !== 0 && votes !== -0) {
+        return Promise.reject({
+            status: 400, msg: 'votes values was incorrect'
+        })
+    }
+    return this.fetchReviewById(review_id)
+        .then(() => {
+            if (votes === 0 || votes === -0) {
+                return db.query(
+                    `SELECT * FROM reviews WHERE review_id = $1;`,
+                    [review_id]
+                ).then((review) => {
+                    return review.rows[0]
+                })
+            } else {
+                return db.query(
+                    `update reviews set votes = votes + $1 where review_id = $2 returning *;`, [inc_votes, review_id])
+                .then((review) => {
+                return review.rows[0]
+            })
+        }
+    })
+}

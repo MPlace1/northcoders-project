@@ -98,21 +98,116 @@ describe('/api/reviews/:review_id', () => {
 
                 })
         });
-        test("should return a 404 status if the Id is invalid", () => {
+        test("should return a 404 status if the Id is invalid (out of range)", () => {
             return request(app)
                 .get("/api/reviews/10000")
                 .expect(404)
                 .then(({ body }) => {
-                    expect(body.msg).toEqual("review does not exist");
+                    expect(body.msg).toBe("review does not exist");
                 });
         });
-        test("should return a 404 status if the Id is invalid", () => {
+        test("should return a 404 status if the Id is invalid (not a number)", () => {
             return request(app)
                 .get("/api/reviews/a")
                 .expect(400)
                 .then(({ body }) => {
-                    expect(body.msg).toEqual("Bad request");
+                    expect(body.msg).toBe("Bad request");
                 });
+        });
+    });
+    describe('PATCH', () => {
+        test('should update the votes of a review (adding)', () => {
+            const updateVotes = {inc_votes: 50}
+            return request(app)
+            .patch("/api/reviews/1")
+            .send(updateVotes)
+            .expect(200)
+            .then(({body}) => {
+                expect(body.review).toMatchObject({"category": "euro game",
+                   "created_at": "2021-01-18T10:00:20.514Z",
+                   "designer": "Uwe Rosenberg",
+                   "owner": "mallionaire",
+                   "review_body": "Farmyard fun!",
+                   "review_id": 1,
+                   "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+                   "title": "Agricola",
+                   "votes": 51,})
+            })
+        });
+        test('should update the votes of a review (subracting)', () => {
+            const updateVotes = {inc_votes: -50}
+            return request(app)
+            .patch("/api/reviews/1")
+            .send(updateVotes)
+            .expect(200)
+            .then(({body}) => {
+                expect(body.review).toMatchObject({"category": "euro game",
+                   "created_at": "2021-01-18T10:00:20.514Z",
+                   "designer": "Uwe Rosenberg",
+                   "owner": "mallionaire",
+                   "review_body": "Farmyard fun!",
+                   "review_id": 1,
+                   "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+                   "title": "Agricola",
+                   "votes": -49,})
+            })
+        });
+        test("should keep the vote count the saaame if 0 is entered", () => {
+            const updateVotes = {inc_votes: 0}
+            return request(app)
+            .patch("/api/reviews/1")
+            .send(updateVotes)
+            .expect(200)
+            .then(({body}) => {
+                expect(body.review).toMatchObject({"category": "euro game",
+                   "created_at": "2021-01-18T10:00:20.514Z",
+                   "designer": "Uwe Rosenberg",
+                   "owner": "mallionaire",
+                   "review_body": "Farmyard fun!",
+                   "review_id": 1,
+                   "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+                   "title": "Agricola",
+                   "votes": 1,})
+            })
+        });
+        test("should return a 404 if a request is made to a review which doesn't exist", () => {
+            const updateVotes = {inc_votes: 50}
+            return request(app)
+            .patch("/api/reviews/1000000")
+            .send(updateVotes)
+            .expect(404)
+            .then(({body}) => {
+                expect(body.msg).toBe('review does not exist')
+            })
+        });
+        test("should return a 400 if the id is not a number", () => {
+            const updateVotes = {inc_votes: 50}
+            return request(app)
+            .patch("/api/reviews/a")
+            .send(updateVotes)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        });
+        test("should return a 400 if inc_votes is not a number", () => {
+            const updateVotes = {inc_votes: 'a'}
+            return request(app)
+            .patch("/api/reviews/1")
+            .send(updateVotes)
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('Bad request')
+            })
+        });
+        test("should return a 400 (votes values was incorrect) error if inc_votes is undefined", () => {
+            return request(app)
+            .patch("/api/reviews/1")
+            .send()
+            .expect(400)
+            .then(({body}) => {
+                expect(body.msg).toBe('votes values was incorrect')
+            })
         });
     });
 });
@@ -147,24 +242,24 @@ describe('/api/reviews/:review_id/comments', () => {
                 .get("/api/reviews/1/comments")
                 .expect(200)
                 .then(({ body }) => {
-                    expect(body.review.length).toEqual(0)
+                    expect(body.review.length).toBe(0)
                     expect(body.review).toEqual([])
                 })
         });
-        test("should return a 404 status if the Id is invalid", () => {
+        test("should return a 404 status if the Id is invalid (out of range)", () => {
             return request(app)
                 .get("/api/reviews/10000/comments")
                 .expect(404)
                 .then(({ body }) => {
-                    expect(body.msg).toEqual("review does not exist");
+                    expect(body.msg).toBe("review does not exist");
                 });
         });
-        test("should return a 404 status if the Id is invalid", () => {
+        test("should return a 404 status if the Id is invalid (not a number)", () => {
             return request(app)
                 .get("/api/reviews/a/comments")
                 .expect(400)
                 .then(({ body }) => {
-                    expect(body.msg).toEqual("Bad request");
+                    expect(body.msg).toBe("Bad request");
                 });
         });
     });
@@ -179,7 +274,7 @@ describe('/api/reviews/:review_id/comments', () => {
                 .send(newComment)
                 .expect(201)
                 .then(({ body }) => {
-                    expect(body.Comment).toEqual({
+                    expect(body.Comment).toMatchObject({
                         comment_id: 7,
                         body: 'This is something',
                         review_id: 1,
@@ -227,7 +322,7 @@ describe('/api/reviews/:review_id/comments', () => {
                 .send(newComment)
                 .expect(400)
                 .then(({ body }) => {
-                    expect(body.msg).toEqual("Invalid comment");
+                    expect(body.msg).toBe("Invalid comment");
                 });
         });
 
@@ -242,7 +337,7 @@ describe('/api/reviews/:review_id/comments', () => {
                 .send(newComment)
                 .expect(400)
                 .then(({ body }) => {
-                    expect(body.msg).toEqual("Invalid comment");
+                    expect(body.msg).toBe("Invalid comment");
                 });
         });
 
@@ -257,7 +352,7 @@ describe('/api/reviews/:review_id/comments', () => {
                 .send(newComment)
                 .expect(400)
                 .then(({ body }) => {
-                    expect(body.msg).toEqual("Invalid comment");
+                    expect(body.msg).toBe("Invalid comment");
                 });
         });
     });
