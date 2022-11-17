@@ -365,6 +365,7 @@ describe("/api/users", () => {
                 .get("/api/users")
                 .expect(200)
                 .then(({ body }) => {
+                    expect(body.users.length).toBeGreaterThan(0)
                     body.users.forEach((user) => {
                         expect(user).toMatchObject({
                             username: expect.any(String),
