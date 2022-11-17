@@ -4,7 +4,8 @@ const {
     fetchReviewById,
     fetchReviewComments,
     addReviewComment,
-    updateReviewById
+    updateReviewById,
+    fetchUsers
 } = require("../models/bg.model");
 
 exports.getCategories = (req, res, next) => {
@@ -79,6 +80,16 @@ exports.patchReviewById = (req, res, next) => {
     updateReviewById(review_id, inc_votes)
         .then((review) => {
             res.status(200).send({ review })
+        })
+        .catch((err) => {
+            next(err)
+        })
+}
+
+exports.getUsers = (req, res, next) => {
+    fetchUsers()
+        .then((users) => {
+            res.status(200).send({ users })
         })
         .catch((err) => {
             next(err)

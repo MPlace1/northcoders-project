@@ -357,3 +357,32 @@ describe('/api/reviews/:review_id/comments', () => {
         });
     });
 });
+
+describe("/api/users", () => {
+    describe("GET", () => {
+        test("should return a table of user objects which have the correct properties", () => {
+            return request(app)
+                .get("/api/users")
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.users.length).toBeGreaterThan(0)
+                    body.users.forEach((user) => {
+                        expect(user).toMatchObject({
+                            username: expect.any(String),
+                            name: expect.any(String),
+                            avatar_url: expect.any(String)
+                        })
+                    })
+                });
+        });
+
+        test('should return a 404 error if the URL is input incorrectly', () => {
+            return request(app)
+                .get("/api/user")
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe("Route not found");
+                });
+        });
+    });
+});
