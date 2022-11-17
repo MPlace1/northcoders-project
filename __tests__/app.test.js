@@ -521,7 +521,7 @@ describe('/api/comments/:comment_id', () => {
     describe('DELETE', () => {
         test('should return a 204 and return an empty body (meaning it was deleted)', () => {
             return request(app)
-                .delete("/api/comments/7").expect(204)
+                .delete("/api/comments/2").expect(204)
         });
         test('should return a 404 error if a invalid comment_id is given (out of range)', () => {
             return request(app)
