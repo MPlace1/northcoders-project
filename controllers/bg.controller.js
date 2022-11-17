@@ -19,8 +19,14 @@ exports.getCategories = (req, res, next) => {
 }
 
 exports.getReviews = (req, res, next) => {
-    fetchReviews()
+    const { sort_by, order, category } = req.query
+    fetchReviews(sort_by, order, category)
         .then((reviews) => {
+            if (reviews.length === 0) {
+                return Promise.reject({
+                    status: 404, msg: "Category not found"
+                })
+            }
             res.status(200).send({ reviews })
         })
         .catch((err) => {

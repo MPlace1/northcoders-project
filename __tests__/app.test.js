@@ -39,16 +39,72 @@ describe('/api/categories', () => {
     });
 });
 
-describe('/api/reviews', () => {
-    describe('GET', () => {
-        test('should return an array of review objects', () => {
-            return request(app)
-                .get("/api/reviews")
-                .expect(200)
-                .then(({ body }) => {
-                    expect(body.reviews.length).toBeGreaterThan(0)
-                    for (let i = 0; i < body.reviews.length; i++) {
-                        expect(body.reviews[i]).toMatchObject({
+describe("GET /api/reviews/", () => {
+    test("should return an array of review objects ordered by created date (descending)", () => {
+        return request(app)
+            .get("/api/reviews/")
+            .expect(200)
+            .then(({ body }) => {
+                const { reviews } = body;
+                expect(reviews).toBeSortedBy("created_at", { descending: true, coerce: true })
+                reviews.forEach((review) => {
+                    expect(review).toEqual(
+                        expect.objectContaining({
+                            owner: expect.any(String),
+                            title: expect.any(String),
+                            review_id: expect.any(Number),
+                            category: expect.any(String),
+                            review_img_url: expect.any(String),
+                            created_at: expect.any(String),
+                            votes: expect.any(Number),
+                            comment_count: expect.any(Number),
+                        })
+                    );
+                    expect({ review }).toEqual(
+                        expect.not.objectContaining({ review_body: expect.anything() })
+                    );
+                });
+            });
+    });
+
+    test("should return an array of review objects ordered by created date (ascending) if the order parameter is given as asc", () => {
+        return request(app)
+            .get("/api/reviews?order=asc")
+            .expect(200)
+            .then(({ body }) => {
+                const { reviews } = body;
+                expect(reviews).toBeSortedBy("created_at", { ascending: true });
+                reviews.forEach((review) => {
+                    expect(review).toEqual(
+                        expect.objectContaining({
+                            owner: expect.any(String),
+                            title: expect.any(String),
+                            review_id: expect.any(Number),
+                            category: expect.any(String),
+                            review_img_url: expect.any(String),
+                            created_at: expect.any(String),
+                            designer: expect.any(String),
+                            votes: expect.any(Number),
+                            comment_count: expect.any(Number),
+                        })
+                    );
+                    expect({ review }).toEqual(
+                        expect.not.objectContaining({ review_body: expect.anything() })
+                    );
+                });
+            });
+    });
+
+    test("should return a sorted reviews array if sort_by is given", () => {
+        return request(app)
+            .get("/api/reviews?sort_by=designer&order=asc")
+            .expect(200)
+            .then(({ body }) => {
+                const { reviews } = body;
+                expect(reviews).toBeSortedBy("designer", { asc: true });
+                reviews.forEach((review) => {
+                    expect(review).toEqual(
+                        expect.objectContaining({
                             owner: expect.any(String),
                             title: expect.any(String),
                             review_id: expect.any(Number),
@@ -57,21 +113,69 @@ describe('/api/reviews', () => {
                             created_at: expect.any(String),
                             votes: expect.any(Number),
                             designer: expect.any(String),
-                            comment_count: expect.any(String)
+                            comment_count: expect.any(Number),
                         })
+                    );
+                    expect({ review }).toEqual(
+                        expect.not.objectContaining({ review_body: expect.anything() })
+                    );
+                });
+            });
+    });
 
-                    }
-                })
-        });
+    test("should return a filtered reviews array if the category parameter is given", () => {
+        return request(app)
+            .get("/api/reviews?category=social deduction")
+            .expect(200)
+            .then(({ body }) => {
+                const { reviews } = body;
+                expect(reviews).toHaveLength(11);
+                reviews.forEach((review) => {
+                    expect(review).toEqual(
+                        expect.objectContaining({
+                            owner: expect.any(String),
+                            title: expect.any(String),
+                            review_id: expect.any(Number),
+                            category: 'social deduction',
+                            review_img_url: expect.any(String),
+                            created_at: expect.any(String),
+                            votes: expect.any(Number),
+                            designer: expect.any(String),
+                            comment_count: expect.any(Number),
+                        })
+                    );
+                    expect({ review }).toEqual(
+                        expect.not.objectContaining({ review_body: expect.anything() })
+                    );
+                });
+            });
+    });
 
-        test('should return an array sorted by created date', () => {
-            return request(app)
-                .get("/api/reviews")
-                .expect(200)
-                .then(({ body }) => {
-                    expect(body.reviews).toBeSortedBy('created_at', { descending: true, coerce: true, })
-                })
-        })
+    test("should return a 400 status code if an invalid sort_by query is entered", () => {
+        return request(app)
+            .get("/api/reviews?sort_by=a")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toEqual("Bad Request");
+            });
+    });
+
+    test("should return a 400 status code if an invalid order_by query is entered", () => {
+        return request(app)
+            .get("/api/reviews?order=a")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toEqual("Bad Request");
+            });
+    });
+
+    test("should return a 400 status if a category that doesn't exist is entered", () => {
+        return request(app)
+            .get("/api/reviews?category=nonExistentCategory")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body.msg).toEqual("Category not found");
+            });
     });
 });
 
