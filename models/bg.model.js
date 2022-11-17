@@ -10,15 +10,38 @@ exports.fetchCategories = () => {
         })
 }
 
-exports.fetchReviews = () => {
-    return db
-        .query(
-            `select reviews.*, (select count(*) from comments where comments.review_id = reviews.review_id) as comment_count from reviews full outer join comments on reviews.review_id = comments.review_id order by reviews.created_at desc`
-        )
-        .then((reviews) => {
-            return reviews.rows
+exports.fetchReviews = (sort_by = "created_at", order = "desc", category) => {
+    let queryVal = []
+    const canBeSorted = ["owner", "category", "created_at", "review_id", "votes", "comment_count", "designer"]
+    let queryStr = `SELECT reviews.owner, reviews.review_id, reviews.created_at, reviews.title, reviews.category, reviews.review_img_url, reviews.votes, reviews.designer, reviews.review_body, CAST (COUNT(comments) AS INTEGER) AS comment_count
+    FROM reviews
+    LEFT JOIN comments
+    ON reviews.review_id = comments.review_id`
+    if (category) {
+        queryVal.push(category)
+        queryStr += ` WHERE category = $${queryVal.length}`;
+    }
+    queryStr += ` GROUP BY reviews.review_id`;
+    if (canBeSorted.includes(sort_by)) {
+        if ((order === "asc")) {
+            queryStr += ` ORDER BY ${sort_by} ASC`;
+        } else if ((order === "desc")) {
+            queryStr += ` ORDER BY ${sort_by} DESC`;
+        } else {
+            return Promise.reject({
+                status: 400, msg: "Bad Request",
+            });
+        }
+    } else {
+        return Promise.reject({
+            status: 400, msg: "Bad Request"
         })
-}
+    }
+    return db.query(queryStr, queryVal).then((reviews) => {
+        return reviews.rows;
+    });
+};
+
 
 exports.fetchReviewById = (review_id) => {
     return db
