@@ -11,6 +11,7 @@ const {
     deleteCommentById
 } = require("./controllers/bg.controller");
 const endpoints = require('./endpoints.json')
+const apiRouter = require("./routers/api-router.js")
 
 const app = express()
 
@@ -29,7 +30,9 @@ app.get('/api', (req, res, next) => {
     res.send(endpoints)
 })
 
-
+app.get("/seed", (req, res) => {
+    require("./db/seeds/run-seed.js")
+})
 
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {
