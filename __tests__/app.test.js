@@ -223,115 +223,121 @@ describe('/api/reviews/:review_id', () => {
                 .get("/api/reviews/2")
                 .expect(200)
                 .then(({ body }) => {
-                    expect(body.review).toMatchObject( {
+                    expect(body.review).toMatchObject({
                         review_id: 2,
                         title: 'Jenga',
                         designer: 'Leslie Scott',
                         owner: 'philippaclaire9',
                         review_img_url:
-                          'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+                            'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
                         review_body: 'Fiddly fun for all the family',
                         category: 'dexterity',
                         created_at: '2021-01-18T10:01:41.251Z',
                         votes: 5,
                         comment_count: 3
-                      })
+                    })
                 })
         })
     });
     describe('PATCH', () => {
         test('should update the votes of a review (adding)', () => {
-            const updateVotes = {inc_votes: 50}
+            const updateVotes = { inc_votes: 50 }
             return request(app)
-            .patch("/api/reviews/1")
-            .send(updateVotes)
-            .expect(200)
-            .then(({body}) => {
-                expect(body.review).toMatchObject({"category": "euro game",
-                   "created_at": "2021-01-18T10:00:20.514Z",
-                   "designer": "Uwe Rosenberg",
-                   "owner": "mallionaire",
-                   "review_body": "Farmyard fun!",
-                   "review_id": 1,
-                   "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-                   "title": "Agricola",
-                   "votes": 51,})
-            })
+                .patch("/api/reviews/1")
+                .send(updateVotes)
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.review).toMatchObject({
+                        "category": "euro game",
+                        "created_at": "2021-01-18T10:00:20.514Z",
+                        "designer": "Uwe Rosenberg",
+                        "owner": "mallionaire",
+                        "review_body": "Farmyard fun!",
+                        "review_id": 1,
+                        "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+                        "title": "Agricola",
+                        "votes": 51,
+                    })
+                })
         });
         test('should update the votes of a review (subracting)', () => {
-            const updateVotes = {inc_votes: -50}
+            const updateVotes = { inc_votes: -50 }
             return request(app)
-            .patch("/api/reviews/1")
-            .send(updateVotes)
-            .expect(200)
-            .then(({body}) => {
-                expect(body.review).toMatchObject({"category": "euro game",
-                   "created_at": "2021-01-18T10:00:20.514Z",
-                   "designer": "Uwe Rosenberg",
-                   "owner": "mallionaire",
-                   "review_body": "Farmyard fun!",
-                   "review_id": 1,
-                   "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-                   "title": "Agricola",
-                   "votes": -49,})
-            })
+                .patch("/api/reviews/1")
+                .send(updateVotes)
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.review).toMatchObject({
+                        "category": "euro game",
+                        "created_at": "2021-01-18T10:00:20.514Z",
+                        "designer": "Uwe Rosenberg",
+                        "owner": "mallionaire",
+                        "review_body": "Farmyard fun!",
+                        "review_id": 1,
+                        "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+                        "title": "Agricola",
+                        "votes": -49,
+                    })
+                })
         });
         test("should keep the vote count the same if 0 is entered", () => {
-            const updateVotes = {inc_votes: 0}
+            const updateVotes = { inc_votes: 0 }
             return request(app)
-            .patch("/api/reviews/1")
-            .send(updateVotes)
-            .expect(200)
-            .then(({body}) => {
-                expect(body.review).toMatchObject({"category": "euro game",
-                   "created_at": "2021-01-18T10:00:20.514Z",
-                   "designer": "Uwe Rosenberg",
-                   "owner": "mallionaire",
-                   "review_body": "Farmyard fun!",
-                   "review_id": 1,
-                   "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
-                   "title": "Agricola",
-                   "votes": 1,})
-            })
+                .patch("/api/reviews/1")
+                .send(updateVotes)
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.review).toMatchObject({
+                        "category": "euro game",
+                        "created_at": "2021-01-18T10:00:20.514Z",
+                        "designer": "Uwe Rosenberg",
+                        "owner": "mallionaire",
+                        "review_body": "Farmyard fun!",
+                        "review_id": 1,
+                        "review_img_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+                        "title": "Agricola",
+                        "votes": 1,
+                    })
+                })
         });
         test("should return a 404 if a request is made to a review which doesn't exist", () => {
-            const updateVotes = {inc_votes: 50}
+            const updateVotes = { inc_votes: 50 }
             return request(app)
-            .patch("/api/reviews/1000000")
-            .send(updateVotes)
-            .expect(404)
-            .then(({body}) => {
-                expect(body.msg).toBe('review does not exist')
-            })
+                .patch("/api/reviews/1000000")
+                .send(updateVotes)
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('review does not exist')
+                })
         });
         test("should return a 400 if the id is not a number", () => {
-            const updateVotes = {inc_votes: 50}
+            const updateVotes = { inc_votes: 50 }
             return request(app)
-            .patch("/api/reviews/a")
-            .send(updateVotes)
-            .expect(400)
-            .then(({body}) => {
-                expect(body.msg).toBe('Bad request')
-            })
+                .patch("/api/reviews/a")
+                .send(updateVotes)
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+                })
         });
         test("should return a 400 if inc_votes is not a number", () => {
-            const updateVotes = {inc_votes: 'a'}
+            const updateVotes = { inc_votes: 'a' }
             return request(app)
-            .patch("/api/reviews/1")
-            .send(updateVotes)
-            .expect(400)
-            .then(({body}) => {
-                expect(body.msg).toBe('Bad request')
-            })
+                .patch("/api/reviews/1")
+                .send(updateVotes)
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad request')
+                })
         });
         test("should return a 400 (votes values was incorrect) error if inc_votes is undefined", () => {
             return request(app)
-            .patch("/api/reviews/1")
-            .send()
-            .expect(400)
-            .then(({body}) => {
-                expect(body.msg).toBe('votes values was incorrect')
-            })
+                .patch("/api/reviews/1")
+                .send()
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('votes values was incorrect')
+                })
         });
     });
 });
@@ -391,7 +397,7 @@ describe('/api/reviews/:review_id/comments', () => {
         test("posts the new comment with a status code of 201", () => {
             const newComment = {
                 username: "mallionaire",
-                body : 'This is something',
+                body: 'This is something',
             };
             return request(app)
                 .post("/api/reviews/1/comments")
@@ -405,13 +411,13 @@ describe('/api/reviews/:review_id/comments', () => {
                         author: 'mallionaire',
                         votes: 0,
                         created_at: expect.any(String)
-                      });
+                    });
                 });
         });
         test("should return a 404 error if the request is made to a review which doesn't exist", () => {
             const newComment = {
                 username: "mallionaire",
-                body : 'This is something',
+                body: 'This is something',
             };
             return request(app)
                 .post("/api/reviews/100000/comments")
@@ -425,7 +431,7 @@ describe('/api/reviews/:review_id/comments', () => {
         test("should return a 404 if the user doesn't exist", () => {
             const newComment = {
                 username: "banana",
-                body : 'This is something',
+                body: 'This is something',
             };
             return request(app)
                 .post("/api/reviews/1/comments")
@@ -453,7 +459,7 @@ describe('/api/reviews/:review_id/comments', () => {
         test("should return a 400 status code if a post request is made with an incorrect key name", () => {
             const newComment = {
                 author: "mallionaire",
-                comment : 'This is something',
+                comment: 'This is something',
             };
 
             return request(app)
@@ -468,7 +474,7 @@ describe('/api/reviews/:review_id/comments', () => {
         test("should return a 400 status code if a post request is made with an incorrect value type", () => {
             const newComment = {
                 author: 1,
-                body : 'This is something',
+                body: 'This is something',
             };
 
             return request(app)
@@ -507,6 +513,29 @@ describe("/api/users", () => {
                 .then(({ body }) => {
                     expect(body.msg).toBe("Route not found");
                 });
+        });
+    });
+});
+
+describe('/api/comments/:comment_id', () => {
+    describe('DELETE', () => {
+        test('should return a 204 and return an empty body (meaning it was deleted)', () => {
+            return request(app)
+                .delete("/api/comments/2").expect(204)
+        });
+        test('should return a 404 error if a invalid comment_id is given (out of range)', () => {
+            return request(app)
+                .delete("/api/comments/100000").expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe("Comment doesn't exist")
+                })
+        });
+        test('should return a 400 error if a invalid comment_id is given (not a number)', () => {
+            return request(app)
+                .delete("/api/comments/a").expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Invalid comment ID')
+                })
         });
     });
 });

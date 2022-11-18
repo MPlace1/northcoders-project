@@ -5,7 +5,9 @@ const {
     fetchReviewComments,
     addReviewComment,
     updateReviewById,
-    fetchUsers
+    fetchUsers,
+    selectCommentByID,
+    removeCommentByID
 } = require("../models/bg.model");
 
 exports.getCategories = (req, res, next) => {
@@ -100,4 +102,30 @@ exports.getUsers = (req, res, next) => {
         .catch((err) => {
             next(err)
         })
+}
+
+exports.deleteCommentById = (req, res, next) => {
+    const { comment_id } = req.params
+    if (isNaN(comment_id)) {
+        return next({
+            status: 400, msg: 'Invalid comment ID'
+        })
+    }
+    selectCommentByID(comment_id)
+        .then((comment) => {
+            if (!comment) {
+                return Promise.reject({
+                    status: 404, msg: "Comment doesn't exist"
+                })
+            }
+            return comment
+        })
+        .then(() => {
+            removeCommentByID(comment_id).then(() => {
+                res.status(204).send()
+            })
+        })
+        .catch((err) => {
+            next(err);
+        });
 }
