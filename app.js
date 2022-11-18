@@ -10,6 +10,7 @@ const {
     selectCommentById,
     deleteCommentById
 } = require("./controllers/bg.controller");
+const endpoints = require('./endpoints.json')
 
 const app = express()
 
@@ -23,6 +24,10 @@ app.post("/api/reviews/:review_id/comments", postReviewComment)
 app.patch("/api/reviews/:review_id", patchReviewById)
 app.get("/api/users", getUsers)
 app.delete("/api/comments/:comment_id/", deleteCommentById)
+
+app.get('/api', (req, res, next) => {
+    res.send(endpoints)
+})
 
 
 
