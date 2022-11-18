@@ -31,6 +31,7 @@ app.get('/api', (req, res, next) => {
 
 app.get("/seed", (req, res) => {
     require("./db/seeds/run-seed.js")
+    res.send({ msg: "database seeded" })
 })
 
 app.use((err, req, res, next) => {
