@@ -11,7 +11,6 @@ const {
     deleteCommentById
 } = require("./controllers/bg.controller");
 const endpoints = require('./endpoints.json')
-const apiRouter = require("./routers/api-router.js")
 
 const app = express()
 
