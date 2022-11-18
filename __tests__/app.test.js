@@ -539,3 +539,136 @@ describe('/api/comments/:comment_id', () => {
         });
     });
 });
+
+describe('/api', () => {
+    describe('GET', () => {
+
+        test('should return a json object describing all endpoints', () => {
+            return request(app)
+                .get("/api")
+                .then(({ body
+                }) => {
+                    expect(body).toStrictEqual(
+                        {
+                            "GET /api": {
+                                "description": "serves up a json representation of all the available endpoints of the api"
+                            },
+                            "GET /api/categories": {
+                                "description": "serves an array of all categories",
+                                "queries": [],
+                                "exampleResponse": {
+                                    "categories": [
+                                        {
+                                            "description": "Players attempt to uncover each other's hidden role",
+                                            "slug": "Social deduction"
+                                        }
+                                    ]
+                                }
+                            },
+                            "GET /api/reviews": {
+                                "description": "serves an array of all reviews",
+                                "queries": [
+                                    "category",
+                                    "sort_by",
+                                    "order"
+                                ],
+                                "exampleResponse": {
+                                    "reviews": [
+                                        {
+                                            "title": "One Night Ultimate Werewolf",
+                                            "designer": "Akihisa Okui",
+                                            "owner": "happyamy2016",
+                                            "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+                                            "review_body": "We couldn't find the werewolf",
+                                            "category": "hidden-roles",
+                                            "created_at": 1610964101251,
+                                            "votes": 5
+                                        }
+                                    ]
+                                }
+                            },
+                            "GET /api/users": {
+                                "description": "serves an array of all users",
+                                "queries": [],
+                                "exampleResponse": {
+                                    "users": [
+                                        {
+                                            "username": "mallionaire",
+                                            "name": "haz",
+                                            "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+                                        }
+                                    ]
+                                }
+                            },
+                            "GET /api/reviews:review_id": {
+                                "description": "serves an object of a review specified by a given ID",
+                                "queries": [],
+                                "exampleResponse": {
+                                    "title": "Jenga",
+                                    "designer": "Leslie Scott",
+                                    "owner": "philippaclaire9",
+                                    "review_img_url":
+                                        "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+                                    "review_body": "Fiddly fun for all the family",
+                                    "category": "dexterity",
+                                    "created_at": 1610964101251,
+                                    "votes": 5
+                                }
+                            },
+                            "GET /api/reviews:review_id/comments": {
+                                "description": "serves an array of comments for the given review_id",
+                                "queries": [],
+                                "exampleResponse": [
+                                    {
+                                        "comment_id": 2,
+                                        "body": "My dog loved this game too!",
+                                        "review_id": 3,
+                                        "author": "mallionaire",
+                                        "votes": 13,
+                                        "created_at": "2021-01-18T10:09:05.410Z"
+                                    },
+                                    {
+                                        "comment_id": 3,
+                                        "body": "I didn't know dogs could play games",
+                                        "review_id": 3,
+                                        "author": "philippaclaire9",
+                                        "votes": 10,
+                                        "created_at": "2021-01-18T10:09:48.110Z"
+                                    },
+                                    {
+                                        "comment_id": 6,
+                                        "body": "Not sure about dogs, but my cat likes to get involved with board games, the boxes are their particular favourite",
+                                        "review_id": 3,
+                                        "author": "philippaclaire9",
+                                        "votes": 10,
+                                        "created_at": "2021-03-27T19:49:48.110Z"
+                                    }
+                                ]
+                            },
+                            "POST /api/reviews/:review_id/comments": {
+                                "description": "posts the comment in the request body at the review which is specified by review_id",
+                                "queries": [],
+                                "exampleRequest": {
+                                    "username": "mallionaire",
+                                    "body": "filler review text"
+                                }
+                            },
+                            "PATCH /api/reviews/:review_id": {
+                                "description": "updates the votes property of a specified review",
+                                "queries": [],
+                                "exampleRequest": {
+                                    "inc_votes": 1
+                                }
+                            },
+                            "DELETE /api/comments/:comment_id": {
+                                "description": "deletes the comment which has the specified comment_id",
+                                "queries": [],
+                                "exampleResponse": []
+                            }
+                        }
+
+                    )
+                })
+        });
+    });
+});
